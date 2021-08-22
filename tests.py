@@ -17,7 +17,7 @@ class TestEval(unittest.TestCase):
         b = default_binary_operators
 
         self.template_test_basic(None, None, None)  # Default configuration
-        self.template_test_basic(i, u, b)  # Force custom parser
+        self.template_test_basic(i, u, b)  # Force custom evaluator
     
     def test_float(self):
         i = default_identifiers
@@ -25,7 +25,7 @@ class TestEval(unittest.TestCase):
         b = default_binary_operators
 
         self.template_test_float(None, None, None)  # Default configuration
-        self.template_test_float(i, u, b)  # Force custom parser
+        self.template_test_float(i, u, b)  # Force custom evaluator
     
     def test_order_of_operations(self):
         i = default_identifiers
@@ -33,7 +33,7 @@ class TestEval(unittest.TestCase):
         b = default_binary_operators
 
         self.template_test_order_of_operations(None, None, None)  # Default configuration
-        self.template_test_order_of_operations(i, u, b)  # Force custom parser
+        self.template_test_order_of_operations(i, u, b)  # Force custom evaluator
     
     def test_unary_operators(self):
         i = default_identifiers
@@ -41,7 +41,7 @@ class TestEval(unittest.TestCase):
         b = default_binary_operators
 
         self.template_test_unary_operators(None, None, None)  # Default configuration
-        self.template_test_unary_operators(i, u, b)  # Force custom parser
+        self.template_test_unary_operators(i, u, b)  # Force custom evaluator
     
     def test_functions(self):
         i = default_identifiers
@@ -49,7 +49,7 @@ class TestEval(unittest.TestCase):
         b = default_binary_operators
 
         self.template_test_functions(None, None, None)  # Default configuration
-        self.template_test_functions(i, u, b)  # Force custom parser
+        self.template_test_functions(i, u, b)  # Force custom evaluator
 
     def test_variables(self):
         i = default_identifiers
@@ -57,7 +57,7 @@ class TestEval(unittest.TestCase):
         b = default_binary_operators
 
         self.template_test_variables(None, None, None)  # Default configuration
-        self.template_test_variables(i, u, b)  # Force custom parser
+        self.template_test_variables(i, u, b)  # Force custom evaluator
 
     def template_test_basic(self, i, u, b):
         self.assertEqual(calc("9", i, u, b), 9)

@@ -52,7 +52,8 @@ default_identifiers = {
 ```
 
 If you need to customize the set of operators, but don't change them afterwards, it may be more efficient to create a
-`Parser(unary_operators, binary_operators)` instance, and use `parser.calc(identifiers)` instead of module-level `calc`.
+`Evaluator(unary_operators, binary_operators)` instance, and use `evaluator.calc(identifiers)` instead of module-level
+`calc`.
 
 Examples:
 ```
@@ -79,7 +80,7 @@ import lark
 
 __all__ = [
     "calc", 
-    "Parser", 
+    "Evaluator", 
     "default_unary_operators", 
     "default_binary_operators",
     "default_identifiers"
@@ -176,11 +177,11 @@ class Transformer(lark.Transformer):
         raise AttributeError
 
 
-class Parser:
-    """A parser that allows specifying unary and binary operators, valid in an expression.
+class Evaluator:
+    """A evaluator that allows specifying unary and binary operators, valid in an expression.
 
-    If you are doing many calculations with the same set of operators, it may be more efficient to create a Parser
-    instance, and call `parser.calc` instead of module-level `calc`. Identifiers can still be specified using this
+    If you are doing many calculations with the same set of operators, it may be more efficient to create an Evaluator
+    instance, and call `evaluator.calc` instead of module-level `calc`. Identifiers can still be specified using this
     method.
 
     More information on parameters available in module docstring.
@@ -252,7 +253,7 @@ class Parser:
             obrl=self.obrl
         )
 
-        self.parser = lark.Lark(self.grammar, parser="lalr", start="expr")
+        self.evaluator = lark.Lark(self.grammar, parser="lalr", start="expr")
         self.transformer = Transformer({}, oul=self.oul, our=self.our, oblr=self.oblr, obrl=self.obrl)
 
     @classmethod
@@ -401,7 +402,7 @@ default_identifiers = {
     "atan2": math.atan2,
 }
 
-_default_parser = Parser(
+_default_evaluator = Evaluator(
     unary_operators=default_unary_operators,
     binary_operators=default_binary_operators
 )
@@ -418,11 +419,11 @@ def calc(string,
     """
 
     if unary_operators is None and binary_operators is None:
-        return _default_parser.calc(string, identifiers)
+        return _default_evaluator.calc(string, identifiers)
 
     unary_operators = unary_operators or default_unary_operators
     binary_operators = binary_operators or default_binary_operators
     identifiers = identifiers or default_identifiers
 
-    p = Parser(unary_operators, binary_operators)
+    p = Evaluator(unary_operators, binary_operators)
     return p.calc(string, identifiers)

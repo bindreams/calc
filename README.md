@@ -74,4 +74,4 @@ default_identifiers = {
 ```
 
 If you need to customize the set of operators, but don't change them afterwards, it may be more efficient to create a
-`Parser(unary_operators, binary_operators)` instance, and use `parser.calc(identifiers)` instead of module-level `calc`.
+`Evaluator(unary_operators, binary_operators)` instance, and use `evaluator.calc(identifiers)` instead of module-level `calc`.
