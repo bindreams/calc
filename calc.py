@@ -95,7 +95,7 @@ class Transformer(lark.Transformer):
         obrl = None):
 
         super().__init__()
-        self.identifiers = identifiers
+        self.identifiers = identifiers or {}
 
         self.oul = oul or {}
         self.our = our or {}
@@ -220,6 +220,9 @@ class Parser:
             dict[tuple[str, int], Callable],
             dict[tuple[str, int, Union["lr", "rl"]], Callable]
         ] = None):
+
+        unary_operators = unary_operators or default_unary_operators
+        binary_operators = binary_operators or default_binary_operators
 
         self.oul = {tag[0]: value for tag, value in unary_operators.items() if tag[1] == "prefix"}
         self.our = {tag[0]: value for tag, value in unary_operators.items() if tag[1] == "postfix"}
@@ -433,8 +436,8 @@ def calc(string,
         return _default_parser.calc(string, identifiers)
 
     unary_operators = unary_operators or default_unary_operators
-    binary_operators = binary_operators or default_unary_operators
-    identifiers = identifiers or {}
+    binary_operators = binary_operators or default_binary_operators
+    identifiers = identifiers or default_identifiers
 
     p = Parser(unary_operators, binary_operators)
     return p.calc(string, identifiers)
