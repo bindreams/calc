@@ -192,26 +192,24 @@ class Parser:
         %import common.WS
         %ignore WS
 
-        ?expr: begin_lr
+        ?expr: eblr
 
         {eblr}
-
         {ebrl}
-        
-        ?atom: NUMBER                               -> number
-            | IDENTIFIER                            -> identifier
-            | IDENTIFIER "(" expr ["," expr]* ")"   -> function
-            | "(" expr ")"
-            {eul_branch} {eur_branch}
-        
         {eul}
         {eur}
         
-        {oul}
-        {our}
+        ?atom: number | identifier | function | parens
+        
+        ?number:     NUMBER                              -> number
+        ?function:   IDENTIFIER "(" expr ["," expr]* ")" -> function
+        ?identifier: IDENTIFIER                          -> identifier
+        ?parens:     "(" expr ")"
 
         {oblr}
         {obrl}
+        {oul}
+        {our}
     """).strip()
 
     def __init__(self,
@@ -254,6 +252,9 @@ class Parser:
             obrl=self.obrl
         )
 
+        self.parser = lark.Lark(self.grammar, parser="lalr", start="expr")
+        self.transformer = Transformer({}, oul=self.oul, our=self.our, oblr=self.oblr, obrl=self.obrl)
+
     @classmethod
     def make_grammar(cls, oul: dict, our: dict, oblr: dict, obrl: dict):
         """Create grammar for the particular set of:
@@ -275,21 +276,17 @@ class Parser:
         
         # Unary operators
         if oul:
-            seul_branch = "| eul "  # Branch
-            seul = "?eul.2: OUL atom -> eul"
+            seul = "?eul: eur | OUL eul -> eul"
             soul = "OUL: " + " | ".join(f'"{x}"' for x in oul)
         else:
-            seul_branch = ""
-            seul = ""
+            seul = "?eul: eur"
             soul = ""
         
         if our:
-            seur_branch = "| eur"
-            seur = "?eur.1: atom OUR -> eur"
+            seur = "?eur: atom | eur OUR -> eur"
             sour = "OUR: " + " | ".join(f'"{x}"' for x in our)
         else:
-            seur_branch = ""
-            seur = ""
+            seur = "?eur: atom"
             sour = ""
 
         return cls.grammar_template.format(
@@ -297,22 +294,20 @@ class Parser:
             ebrl="\n".join(lebrl),
             eul=seul,
             eur=seur,
-            eul_branch=seul_branch,
-            eur_branch=seur_branch,
-            oul=soul,
-            our=sour,
             oblr="\n".join(loblr),
             obrl="\n".join(lobrl),
+            oul=soul,
+            our=sour,
         )
 
     @classmethod
     def make_binary_exprs(cls, operators: dict, rl):
         if rl:
-            final_rule = "atom"
+            final_rule = "eul"
             edir = "rl"
             odir = "RL"
         else:
-            final_rule = "begin_rl"
+            final_rule = "ebrl"
             edir = "lr"
             odir = "LR"
 
@@ -320,9 +315,9 @@ class Parser:
         precedences = list(operators)
 
         if len(precedences) > 0:
-            begin_rule = f"?begin_{edir}: eb{edir}{precedences[0]}"
+            begin_rule = f"?eb{edir}: eb{edir}{precedences[0]}"
         else:
-            begin_rule = f"?begin_{edir}: {final_rule}"
+            begin_rule = f"?eb{edir}: {final_rule}"
 
         exprs.append(begin_rule)
 
@@ -337,13 +332,12 @@ class Parser:
                 next_expr = f"eb{edir}{precedences[i+1]}"
 
             expr = f"eb{edir}{pr}"
-            handler = f"eb{edir}{pr}"
-            op = f"OB{odir}{pr}"
+            op   = f"OB{odir}{pr}"
 
             if rl:
-                expr = f"?{expr}: {next_expr} | {next_expr} {op} {expr} -> {handler}"
+                expr = f"?{expr}: {next_expr} | {next_expr} {op} {expr}"
             else:
-                expr = f"?{expr}: {next_expr} | {expr} {op} {next_expr} -> {handler}"
+                expr = f"?{expr}: {next_expr} | {expr} {op} {next_expr}"
 
             exprs.append(expr)
         
@@ -371,19 +365,10 @@ class Parser:
         """Evaluate a mathematical expression.
         See module docstring for more info.
         """
-        p = lark.Lark(self.grammar, 
-            parser="lalr",
-            start="expr",
-            transformer=Transformer(
-                identifiers,
-                self.oul,
-                self.our,
-                self.oblr,
-                self.obrl
-            )
-        )
+        self.transformer.identifiers = identifiers or {}
+        tree = self.parser.parse(string)
 
-        return p.parse(string)
+        return self.transformer.transform(tree) 
 
 
 default_unary_operators = {
