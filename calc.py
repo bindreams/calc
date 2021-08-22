@@ -437,4 +437,4 @@ def calc(string,
     identifiers = identifiers or {}
 
     p = Parser(unary_operators, binary_operators)
-    return p.calc(string)
+    return p.calc(string, identifiers)
