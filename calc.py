@@ -253,7 +253,7 @@ class Evaluator:
             obrl=self.obrl
         )
 
-        self.evaluator = lark.Lark(self.grammar, parser="lalr", start="expr")
+        self.parser = lark.Lark(self.grammar, parser="lalr", start="expr")
         self.transformer = Transformer({}, oul=self.oul, our=self.our, oblr=self.oblr, obrl=self.obrl)
 
     @classmethod
