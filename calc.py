@@ -70,6 +70,17 @@ Examples:
 
 ```
 """
+# This module uses extreme abbreviations to make variable names manageable.
+# Variable names are composed of the following acronyms:
+# e:  expression(s)
+# o:  operator(s)
+# u:  unary
+# b:  binary
+# lr: left-to-right (for binary operators and expressions)
+# rl: right-to-left (for binary operators and expressions)
+# l:  left-side, or prefix (for unary operators)
+# r:  right-side, or postfix (for unary operators)
+
 from collections import OrderedDict
 import operator
 import math
@@ -87,6 +98,7 @@ __all__ = [
 ]
 
 class Transformer(lark.Transformer):
+    """Transformer for interaction with the tree built by lark parser."""
     re_binary_op = re.compile(r"eb(rl|lr)(-?\d+)")
 
     def __init__(self, identifiers: dict[str, Any] = None,
