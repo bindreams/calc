@@ -425,5 +425,5 @@ def calc(string,
     binary_operators = binary_operators or default_binary_operators
     identifiers = identifiers or default_identifiers
 
-    p = Evaluator(unary_operators, binary_operators)
-    return p.calc(string, identifiers)
+    evaluator = Evaluator(unary_operators, binary_operators)
+    return evaluator.calc(string, identifiers)
