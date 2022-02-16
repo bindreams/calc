@@ -7,7 +7,7 @@ install_requires = [
 
 setup(
     name="calc",
-    version="1.0.0",
+    version="1.0.1",
     description="Safe eval-like function for mathematical expressions",
     author="Andrey Zhukov",
     author_email="andres.zhukov@gmail.com",
