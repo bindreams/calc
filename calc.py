@@ -90,9 +90,9 @@ from typing import Any, Union, Callable
 import lark
 
 __all__ = [
-    "calc", 
-    "Evaluator", 
-    "default_unary_operators", 
+    "calc",
+    "Evaluator",
+    "default_unary_operators",
     "default_binary_operators",
     "default_identifiers"
 ]
@@ -127,12 +127,12 @@ class Transformer(lark.Transformer):
         """Identifier."""
         s = tokens[0].value
         return self.identifiers[s]
-    
+
     def function(self, tokens):
         """Function."""
         name = tokens[0].value
         return self.identifiers[name](*tokens[1:])
-    
+
     def eul(self, tokens):
         """Expression Unary Left-side (prefix)."""
         op = tokens[0].value
@@ -142,7 +142,7 @@ class Transformer(lark.Transformer):
             return self.oul[op](value)
         except KeyError:
             raise ValueError(f"unknown unary prefix operator '{op}'") from None
-    
+
     def eur(self, tokens):
         """Expression Unary Right-side (postfix)."""
         op = tokens[1].value
@@ -152,7 +152,7 @@ class Transformer(lark.Transformer):
             return self.our[op](value)
         except KeyError:
             raise ValueError(f"unknown unary postfix operator '{op}'") from None
-    
+
     def eblr(self, precedence, tokens):
         """Expression Binary Left to Right."""
         op = tokens[1].value
@@ -163,7 +163,7 @@ class Transformer(lark.Transformer):
             return self.oblr[precedence][op](lhs, rhs)
         except IndexError:
             raise ValueError(f"unknown order {precedence} binary left-to-right operator '{op}'") from None
-    
+
     def ebrl(self, precedence, tokens):
         """Expression Binary Right to Left."""
         op = tokens[1].value
@@ -180,12 +180,12 @@ class Transformer(lark.Transformer):
         if attr.startswith("eb"):
             match = re.search(self.re_binary_op, attr)
             precedence = int(match[2])
-            
+
             if match[1] == "lr":
                 return lambda tokens: self.eblr(precedence, tokens)
             else:
                 return lambda tokens: self.ebrl(precedence, tokens)
-        
+
         raise AttributeError
 
 
@@ -211,9 +211,9 @@ class Evaluator:
         {ebrl}
         {eul}
         {eur}
-        
+
         ?atom: number | identifier | function | parens
-        
+
         ?number:     NUMBER                              -> number
         ?function:   IDENTIFIER "(" expr ["," expr]* ")" -> function
         ?identifier: IDENTIFIER                          -> identifier
@@ -237,7 +237,7 @@ class Evaluator:
 
         self.oul = {tag[0]: value for tag, value in unary_operators.items() if tag[1] == "prefix"}
         self.our = {tag[0]: value for tag, value in unary_operators.items() if tag[1] == "postfix"}
-        
+
         self.oblr = OrderedDict()
         self.obrl = OrderedDict()
         """A dict of dicts, with outer keys being order of precedence (lower number is higher precedence),
@@ -257,7 +257,7 @@ class Evaluator:
                 self.obrl[tag[1]] = data
             else:
                 raise ValueError("binary operator tag's third member must be 'lr' or 'rl'")
-        
+
         self.grammar = self.make_grammar(
             our=self.our,
             oul=self.oul,
@@ -286,7 +286,7 @@ class Evaluator:
 
         leblr = cls.make_binary_exprs(oblr, rl=False)
         lebrl = cls.make_binary_exprs(obrl, rl=True)
-        
+
         # Unary operators
         if oul:
             seul = "?eul: eur | OUL eul -> eul"
@@ -294,7 +294,7 @@ class Evaluator:
         else:
             seul = "?eul: eur"
             soul = ""
-        
+
         if our:
             seur = "?eur: atom | eur OUR -> eur"
             sour = "OUR: " + " | ".join(f'"{x}"' for x in our)
@@ -353,7 +353,7 @@ class Evaluator:
                 expr = f"?{expr}: {next_expr} | {expr} {op} {next_expr}"
 
             exprs.append(expr)
-        
+
         return exprs
 
     @classmethod
@@ -369,7 +369,7 @@ class Evaluator:
             # Example: Operator Binary Left to Right
             # OBLR2: "*" | "/" | "%"
             op = f"OB{odir}{precedence}: " + " | ".join(f'"{x}"' for x in operators.keys())
-            
+
             ops.append(op)
 
         return ops
@@ -381,7 +381,7 @@ class Evaluator:
         self.transformer.identifiers = identifiers or {}
         tree = self.parser.parse(string)
 
-        return self.transformer.transform(tree) 
+        return self.transformer.transform(tree)
 
 
 default_unary_operators = {

@@ -37,7 +37,7 @@ class TestEval(unittest.TestCase):
 
         self.template_test_basic(None, None, None)  # Default configuration
         self.template_test_basic(i, u, b)  # Force custom evaluator
-    
+
     def test_float(self):
         i = default_identifiers
         u = default_unary_operators
@@ -45,7 +45,7 @@ class TestEval(unittest.TestCase):
 
         self.template_test_float(None, None, None)  # Default configuration
         self.template_test_float(i, u, b)  # Force custom evaluator
-    
+
     def test_order_of_operations(self):
         i = default_identifiers
         u = default_unary_operators
@@ -53,7 +53,7 @@ class TestEval(unittest.TestCase):
 
         self.template_test_order_of_operations(None, None, None)  # Default configuration
         self.template_test_order_of_operations(i, u, b)  # Force custom evaluator
-    
+
     def test_unary_operators(self):
         i = default_identifiers
         u = default_unary_operators
@@ -61,7 +61,7 @@ class TestEval(unittest.TestCase):
 
         self.template_test_unary_operators(None, None, None)  # Default configuration
         self.template_test_unary_operators(i, u, b)  # Force custom evaluator
-    
+
     def test_functions(self):
         i = default_identifiers
         u = default_unary_operators
@@ -86,7 +86,7 @@ class TestEval(unittest.TestCase):
         self.assertEqual(calc("9 - 12 - 6", i, u, b), 9 - 12 - 6)
         self.assertEqual(calc("2^3^2", i, u, b), 2 ** 3 ** 2)
         self.assertEqual(calc("2^9", i, u, b), 2 ** 9)
-    
+
     def template_test_float(self, i, u, b):
         self.assertEqual(calc("2*3.14159", i, u, b), 2 * 3.14159)
         self.assertEqual(calc("3.1415926535*3.1415926535 / 10", i, u, b), 3.1415926535 * 3.1415926535 / 10)
@@ -107,8 +107,8 @@ class TestEval(unittest.TestCase):
         self.assertEqual(calc("--9", i, u, b), 9)
         self.assertEqual(
             calc("?1!", i, {
-                ("?", "prefix"): lambda x: x*2, 
-                ("!", "postfix"): lambda x: x+1, 
+                ("?", "prefix"): lambda x: x*2,
+                ("!", "postfix"): lambda x: x+1,
             }, b),
             4
         )
