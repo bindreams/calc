@@ -11,6 +11,25 @@ def load_tests(loader, tests, ignore):
     return tests
 
 class TestEval(unittest.TestCase):
+    def test_default(self):
+        self.assertEqual(calc("9"), 9)
+        self.assertEqual(calc("9 + 3 + 6"), 9 + 3 + 6)
+        self.assertEqual(calc("9 + 3 / 11"), 9 + 3.0 / 11)
+        self.assertEqual(calc("(9 + 3)"), (9 + 3))
+        self.assertEqual(calc("9 - 12 - 6"), 9 - 12 - 6)
+        self.assertEqual(calc("2^3^2"), 2 ** 3 ** 2)
+        self.assertEqual(calc("2^9"), 2 ** 9)
+        self.assertEqual(calc("(9+3) / 11"), (9 + 3.0) / 11)
+        self.assertEqual(calc("9 - (12 - 6)"), 9 - (12 - 6))
+        self.assertEqual(calc("(2^3)^2"), (2 ** 3) ** 2)
+        self.assertEqual(calc("2^(1-3)"), 2 ** (1 - 3))
+        self.assertEqual(calc("2^3+2"), 2 ** 3 + 2)
+        self.assertEqual(calc("2^3+5"), 2 ** 3 + 5)
+        self.assertEqual(calc("sin(0)"), 0)
+        self.assertEqual(calc("cos(0)"), 1)
+        self.assertEqual(calc("max(0, 1)"), 1)
+        self.assertEqual(calc("min(sin(0), cos(1))"), 0)
+
     def test_basic(self):
         i = default_identifiers
         u = default_unary_operators

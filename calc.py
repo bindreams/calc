@@ -429,13 +429,13 @@ def calc(string,
     """Evaluate a mathematical expression.
     See module docstring for more info.
     """
+    identifiers = identifiers or default_identifiers
 
     if unary_operators is None and binary_operators is None:
         return _default_evaluator.calc(string, identifiers)
 
     unary_operators = unary_operators or default_unary_operators
     binary_operators = binary_operators or default_binary_operators
-    identifiers = identifiers or default_identifiers
 
     evaluator = Evaluator(unary_operators, binary_operators)
     return evaluator.calc(string, identifiers)
